@@ -37,9 +37,24 @@ logger = logging.getLogger(__name__)
 
 def main_menu():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("👤 My Accounts", callback_data="accounts")],
-        [InlineKeyboardButton("💬 Message Owner", callback_data="contact")],
-        [InlineKeyboardButton("ℹ️ About", callback_data="about")],
+        [
+            InlineKeyboardButton(
+                "👤 My Accounts",
+                callback_data="accounts"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "💬 Message Owner",
+                callback_data="contact"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "About",
+                callback_data="about"
+            )
+        ],
     ])
 
 
@@ -49,11 +64,36 @@ def main_menu():
 
 def accounts_menu():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("📸 Instagram", callback_data="instagram")],
-        [InlineKeyboardButton("🎵 TikTok", callback_data="tiktok")],
-        [InlineKeyboardButton("✈️ Telegram", callback_data="telegram")],
-        [InlineKeyboardButton("🎮 Discord", callback_data="discord")],
-        [InlineKeyboardButton("🔙 Back", callback_data="home")],
+        [
+            InlineKeyboardButton(
+                "📸 Instagram",
+                callback_data="instagram"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🎵 TikTok",
+                callback_data="tiktok"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "✈️ Telegram",
+                callback_data="telegram"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🎮 Discord",
+                callback_data="discord"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🔙 Back",
+                callback_data="home"
+            )
+        ],
     ])
 
 
@@ -62,55 +102,59 @@ def accounts_menu():
 # =========================
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     await update.message.reply_text(
         "🌐 <b>𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃</b>\n\n"
-        "Welcome 👋\n"
-        "اختار من القائمة:",
+        "Welcome.\n"
+        "Choose an option:",
         parse_mode="HTML",
         reply_markup=main_menu(),
     )
 
 
 # =========================
-# BUTTONS
+# BUTTON HANDLER
 # =========================
 
 async def button_handler(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
 ):
+
     query = update.callback_query
     await query.answer()
 
     user = query.from_user
 
-    # -------------------------
+    # =========================
     # HOME
-    # -------------------------
+    # =========================
 
     if query.data == "home":
+
         await query.edit_message_text(
             "🌐 <b>𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃</b>\n\n"
-            "اختار من القائمة:",
+            "Choose an option:",
             parse_mode="HTML",
             reply_markup=main_menu(),
         )
 
-    # -------------------------
+    # =========================
     # ACCOUNTS
-    # -------------------------
+    # =========================
 
     elif query.data == "accounts":
+
         await query.edit_message_text(
             "👤 <b>My Accounts</b>\n\n"
-            "اختار الحساب:",
+            "Choose an account:",
             parse_mode="HTML",
             reply_markup=accounts_menu(),
         )
 
-    # -------------------------
+    # =========================
     # INSTAGRAM
-    # -------------------------
+    # =========================
 
     elif query.data == "instagram":
 
@@ -139,14 +183,14 @@ async def button_handler(
         await query.edit_message_text(
             f"📸 <b>Instagram</b>\n\n"
             f"Account: @{INSTAGRAM}\n\n"
-            f"اضغط لفتح الحساب:",
+            f"Click below to open the account:",
             parse_mode="HTML",
             reply_markup=keyboard,
         )
 
-    # -------------------------
+    # =========================
     # TIKTOK
-    # -------------------------
+    # =========================
 
     elif query.data == "tiktok":
 
@@ -175,14 +219,14 @@ async def button_handler(
         await query.edit_message_text(
             f"🎵 <b>TikTok</b>\n\n"
             f"Account: @{TIKTOK}\n\n"
-            f"اضغط لفتح الحساب:",
+            f"Click below to open the account:",
             parse_mode="HTML",
             reply_markup=keyboard,
         )
 
-    # -------------------------
+    # =========================
     # TELEGRAM
-    # -------------------------
+    # =========================
 
     elif query.data == "telegram":
 
@@ -211,14 +255,14 @@ async def button_handler(
         await query.edit_message_text(
             f"✈️ <b>Telegram</b>\n\n"
             f"Account: @{TELEGRAM}\n\n"
-            f"اضغط لفتح الحساب:",
+            f"Click below to open the account:",
             parse_mode="HTML",
             reply_markup=keyboard,
         )
 
-    # -------------------------
+    # =========================
     # DISCORD
-    # -------------------------
+    # =========================
 
     elif query.data == "discord":
 
@@ -247,14 +291,14 @@ async def button_handler(
         await query.edit_message_text(
             f"🎮 <b>Discord</b>\n\n"
             f"ID: <code>{DISCORD_ID}</code>\n\n"
-            f"اضغط لفتح الحساب:",
+            f"Click below to open the profile:",
             parse_mode="HTML",
             reply_markup=keyboard,
         )
 
-    # -------------------------
+    # =========================
     # CONTACT OWNER
-    # -------------------------
+    # =========================
 
     elif query.data == "contact":
 
@@ -262,29 +306,45 @@ async def button_handler(
 
         await query.edit_message_text(
             "💬 <b>Message Owner</b>\n\n"
-            "اكتب رسالتك الآن وسأرسلها لصاحب البوت.\n\n"
-            "للإلغاء اكتب /cancel",
+            "Write your message and I will send it to the owner.\n\n"
+            "To cancel, type /cancel",
             parse_mode="HTML",
         )
 
-    # -------------------------
+    # =========================
     # ABOUT
-    # -------------------------
+    # =========================
 
     elif query.data == "about":
 
+        about_text = (
+            "⚠️ <b>WARNING — READ CAREFULLY</b>\n\n"
+            "You are about to discover the owner of this Social Hub.\n\n"
+            "Genius\n"
+            "Programmer\n"
+            "Handsome\n"
+            "Gamer\n\n"
+            "Side effects may include:\n"
+            "• Being impressed\n"
+            "• Getting jealous\n"
+            "• Questioning your own skills\n\n"
+            "You have been warned.\n\n"
+            "© 𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃"
+        )
+
+        keyboard = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    "🔙 Back",
+                    callback_data="home"
+                )
+            ]
+        ])
+
         await query.edit_message_text(
-            "🌐 <b>𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃</b>\n\n"
-            "بوت يجمع حسابات التواصل الاجتماعي بمكان واحد.",
+            about_text,
             parse_mode="HTML",
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "🔙 Back",
-                        callback_data="home"
-                    )
-                ]
-            ]),
+            reply_markup=keyboard,
         )
 
 
@@ -302,30 +362,33 @@ async def send_visit_notification(
     username = (
         f"@{user.username}"
         if user.username
-        else "بدون Username"
+        else "No Username"
     )
 
     time_now = datetime.now().strftime(
         "%Y-%m-%d %H:%M:%S"
     )
 
-    message = (
+    notification = (
         "🔔 <b>Someone opened an account button</b>\n\n"
-        f"🌐 Platform: <b>{platform}</b>\n"
-        f"🔗 Account: {account}\n\n"
-        f"👤 Name: {user.full_name}\n"
-        f"🔹 Username: {username}\n"
-        f"🆔 ID: <code>{user.id}</code>\n"
-        f"🕐 Time: {time_now}"
+        f"Platform: <b>{platform}</b>\n"
+        f"Account: {account}\n\n"
+        f"Name: {user.full_name}\n"
+        f"Username: {username}\n"
+        f"ID: <code>{user.id}</code>\n"
+        f"Time: {time_now}"
     )
 
     try:
+
         await context.bot.send_message(
             chat_id=OWNER_ID,
-            text=message,
+            text=notification,
             parse_mode="HTML",
         )
+
     except Exception as error:
+
         logger.error(
             "Could not send notification: %s",
             error
@@ -333,7 +396,7 @@ async def send_visit_notification(
 
 
 # =========================
-# MESSAGES TO OWNER
+# MESSAGE HANDLER
 # =========================
 
 async def message_handler(
@@ -348,66 +411,76 @@ async def message_handler(
     message = update.message
 
     if message.text == "/cancel":
+
         context.user_data["contact_mode"] = False
 
         await message.reply_text(
-            "❌ تم إلغاء المراسلة.",
+            "❌ Message cancelled.",
             reply_markup=main_menu(),
         )
+
         return
 
     if not context.user_data.get("contact_mode"):
+
         await message.reply_text(
-            "استخدم /start لفتح القائمة."
+            "Use /start to open the menu."
         )
+
         return
 
     username = (
         f"@{user.username}"
         if user.username
-        else "بدون Username"
+        else "No Username"
     )
 
-    text = (
+    owner_message = (
         "📩 <b>New Message</b>\n\n"
-        f"👤 Name: {user.full_name}\n"
-        f"🔹 Username: {username}\n"
-        f"🆔 ID: <code>{user.id}</code>\n\n"
-        f"💬 Message:\n{message.text}"
+        f"Name: {user.full_name}\n"
+        f"Username: {username}\n"
+        f"ID: <code>{user.id}</code>\n\n"
+        f"Message:\n{message.text}"
     )
 
     try:
+
         await context.bot.send_message(
             chat_id=OWNER_ID,
-            text=text,
+            text=owner_message,
             parse_mode="HTML",
         )
 
         await message.reply_text(
-            "✅ تم إرسال رسالتك.",
+            "✅ Your message has been sent.",
             reply_markup=main_menu(),
         )
 
     except Exception as error:
+
         logger.error(
             "Could not send owner message: %s",
             error
         )
 
         await message.reply_text(
-            "❌ حدث خطأ أثناء إرسال الرسالة."
+            "❌ An error occurred while sending the message."
         )
 
     context.user_data["contact_mode"] = False
 
 
 # =========================
-# MAIN
+# RUN BOT
 # =========================
 
 def main():
 
-    app = Application.builder().token(BOT_TOKEN).build()
+    app = (
+        Application.builder()
+        .token(BOT_TOKEN)
+        .build()
+    )
 
     app.add_handler(
         CommandHandler("start", start)
@@ -428,7 +501,7 @@ def main():
         )
     )
 
-    print("✅ Social Hub Bot is running...")
+    print("Social Hub Bot is running...")
 
     app.run_polling(
         drop_pending_updates=True
