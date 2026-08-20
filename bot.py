@@ -96,15 +96,15 @@ TEXTS = {
 
     "ar": {
         "accounts": "حساباتي",
-        "contact": "مراسلتي",
-        "about": "حول",
+        "contact": "تواصل معي",
+        "about": "نبذة عني",
         "language": "اللغة",
-        "choose": "اختر خياراً:",
-        "choose_account": "اختر حساباً:",
-        "instagram": "فتح إنستغرام",
-        "tiktok": "فتح تيك توك",
-        "telegram": "فتح تلغرام",
-        "discord": "فتح ديسكورد",
+        "choose": "اختر من القائمة:",
+        "choose_account": "اختر حسابًا:",
+        "instagram": "فتح Instagram",
+        "tiktok": "فتح TikTok",
+        "telegram": "فتح Telegram",
+        "discord": "فتح Discord",
         "copy": "نسخ اسم المستخدم",
         "back": "رجوع",
         "home": "الرئيسية",
@@ -114,27 +114,27 @@ TEXTS = {
         "cancelled": "تم إلغاء الرسالة.",
         "error": "حدث خطأ أثناء إرسال الرسالة.",
         "welcome": (
-            "أهلاً بك.\n\n"
+            "أهلًا بك.\n\n"
             "مكان بسيط للوصول إلى جميع حساباتي "
             "والتواصل معي."
         ),
         "about_text": (
             "⚠️ تحذير — اقرأ بعناية\n\n"
-            "أنت على وشك اكتشاف صاحب هذا الـ Social Hub.\n\n"
+            "أنت على وشك التعرّف إلى صاحب هذا الـ Social Hub.\n\n"
             "• عبقري\n"
             "• مطوّر\n"
             "• وسيم\n"
             "• لاعب ألعاب\n"
-            "• شغوف بالتقنية السيبرانية\n"
+            "• شغوف بالأمن السيبراني\n"
             "• صاحب رؤية\n"
             "• استراتيجي\n"
-            "• منشئ محتوى رقمي\n"
-            "• مهتم بالحاسوب\n"
+            "• صانع محتوى رقمي\n"
+            "• شغوف بالحاسوب\n"
             "• عقل مبدع\n\n"
             "قد تشمل الآثار الجانبية:\n"
             "• الانبهار\n"
-            "• الشعور بالغيرة\n"
-            "• التشكيك بمهاراتك\n\n"
+            "• الغيرة\n"
+            "• إعادة النظر في مهاراتك\n\n"
             "لقد تم تحذيرك.\n\n"
             "© 𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃"
         ),
@@ -143,7 +143,7 @@ TEXTS = {
     "es": {
         "accounts": "Mis cuentas",
         "contact": "Contáctame",
-        "about": "Acerca de",
+        "about": "Acerca de mí",
         "language": "Idioma",
         "choose": "Elige una opción:",
         "choose_account": "Elige una cuenta:",
@@ -166,7 +166,7 @@ TEXTS = {
         ),
         "about_text": (
             "⚠️ ADVERTENCIA — LEE CON ATENCIÓN\n\n"
-            "Estás a punto de descubrir al dueño de este Social Hub.\n\n"
+            "Estás a punto de conocer al dueño de este Social Hub.\n\n"
             "• Genio\n"
             "• Desarrollador\n"
             "• Guapo\n"
@@ -205,13 +205,13 @@ def main_menu(language=None):
             ],
             [
                 InlineKeyboardButton(
-                    "Contact Me — مراسلتي",
+                    "Contact Me — تواصل معي",
                     callback_data="contact"
                 )
             ],
             [
                 InlineKeyboardButton(
-                    "About — حول",
+                    "About — نبذة عني",
                     callback_data="about"
                 )
             ],
@@ -408,8 +408,8 @@ async def start(
 
         await update.message.reply_text(
             "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
-            "Welcome — أهلاً بك\n\n"
-            "Choose an option — اختر خياراً:",
+            "Welcome — أهلًا بك\n\n"
+            "Choose an option — اختر من القائمة:",
             reply_markup=main_menu(),
         )
 
@@ -442,7 +442,6 @@ async def button_handler(
     language = get_language(user.id)
     t = TEXTS[language]
 
-
     # =====================================================
     # HOME
     # =====================================================
@@ -461,11 +460,10 @@ async def button_handler(
 
             await query.edit_message_text(
                 "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
-                "Welcome — أهلاً بك\n\n"
-                "Choose an option — اختر خياراً:",
+                "Welcome — أهلًا بك\n\n"
+                "Choose an option — اختر من القائمة:",
                 reply_markup=main_menu(),
             )
-
 
     # =====================================================
     # MY ACCOUNTS
@@ -483,7 +481,6 @@ async def button_handler(
             t["choose_account"],
             reply_markup=accounts_menu(language),
         )
-
 
     # =====================================================
     # INSTAGRAM
@@ -523,7 +520,6 @@ async def button_handler(
             reply_markup=keyboard,
         )
 
-
     # =====================================================
     # TIKTOK
     # =====================================================
@@ -561,7 +557,6 @@ async def button_handler(
             f"TikTok\n\n@{TIKTOK}",
             reply_markup=keyboard,
         )
-
 
     # =====================================================
     # TELEGRAM
@@ -601,7 +596,6 @@ async def button_handler(
             reply_markup=keyboard,
         )
 
-
     # =====================================================
     # DISCORD
     # =====================================================
@@ -640,7 +634,6 @@ async def button_handler(
             reply_markup=keyboard,
         )
 
-
     # =====================================================
     # COPY USERNAMES
     # =====================================================
@@ -668,7 +661,6 @@ async def button_handler(
             ]),
         )
 
-
     # =====================================================
     # ABOUT
     # =====================================================
@@ -692,7 +684,6 @@ async def button_handler(
                 ]
             ]),
         )
-
 
     # =====================================================
     # CONTACT ME
@@ -721,7 +712,6 @@ async def button_handler(
             ]),
         )
 
-
     # =====================================================
     # LANGUAGE
     # =====================================================
@@ -732,7 +722,6 @@ async def button_handler(
             "Language",
             reply_markup=language_menu(),
         )
-
 
     # =====================================================
     # ENGLISH
@@ -748,7 +737,6 @@ async def button_handler(
             reply_markup=main_menu("en"),
         )
 
-
     # =====================================================
     # ARABIC
     # =====================================================
@@ -759,10 +747,9 @@ async def button_handler(
 
         await query.edit_message_text(
             "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
-            "اختر خياراً:",
+            "اختر من القائمة:",
             reply_markup=main_menu("ar"),
         )
-
 
     # =====================================================
     # SPANISH
@@ -797,7 +784,6 @@ async def message_handler(
     language = get_language(user.id)
     t = TEXTS[language]
 
-
     # =====================================================
     # CANCEL
     # =====================================================
@@ -813,7 +799,6 @@ async def message_handler(
 
         return
 
-
     # =====================================================
     # NOT IN CONTACT MODE
     # =====================================================
@@ -826,7 +811,6 @@ async def message_handler(
         )
 
         return
-
 
     # =====================================================
     # MESSAGE OWNER
