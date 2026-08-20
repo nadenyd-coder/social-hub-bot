@@ -24,9 +24,6 @@ TIKTOK = "bk.36_"
 TELEGRAM = "bk_36"
 DISCORD_ID = "1000576583721025608"
 
-if not BOT_TOKEN:
-    raise RuntimeError("BOT_TOKEN is missing")
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -98,6 +95,29 @@ def accounts_menu():
 
 
 # =========================
+# USER INFO
+# =========================
+
+def user_info(user):
+    username = (
+        f"@{user.username}"
+        if user.username
+        else "No Username"
+    )
+
+    time_now = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+
+    return (
+        f"👤 Name: {user.full_name}\n"
+        f"Username: {username}\n"
+        f"ID: <code>{user.id}</code>\n"
+        f"Time: {time_now}"
+    )
+
+
+# =========================
 # START
 # =========================
 
@@ -139,6 +159,7 @@ async def button_handler(
             reply_markup=main_menu(),
         )
 
+
     # =========================
     # ACCOUNTS
     # =========================
@@ -152,17 +173,17 @@ async def button_handler(
             reply_markup=accounts_menu(),
         )
 
+
     # =========================
     # INSTAGRAM
     # =========================
 
     elif query.data == "instagram":
 
-        await send_visit_notification(
+        await send_notification(
             context,
-            user,
-            "Instagram",
-            f"@{INSTAGRAM}"
+            "📸 Instagram button pressed",
+            user
         )
 
         keyboard = InlineKeyboardMarkup([
@@ -188,17 +209,17 @@ async def button_handler(
             reply_markup=keyboard,
         )
 
+
     # =========================
     # TIKTOK
     # =========================
 
     elif query.data == "tiktok":
 
-        await send_visit_notification(
+        await send_notification(
             context,
-            user,
-            "TikTok",
-            f"@{TIKTOK}"
+            "🎵 TikTok button pressed",
+            user
         )
 
         keyboard = InlineKeyboardMarkup([
@@ -224,17 +245,17 @@ async def button_handler(
             reply_markup=keyboard,
         )
 
+
     # =========================
     # TELEGRAM
     # =========================
 
     elif query.data == "telegram":
 
-        await send_visit_notification(
+        await send_notification(
             context,
-            user,
-            "Telegram",
-            f"@{TELEGRAM}"
+            "✈️ Telegram button pressed",
+            user
         )
 
         keyboard = InlineKeyboardMarkup([
@@ -260,17 +281,17 @@ async def button_handler(
             reply_markup=keyboard,
         )
 
+
     # =========================
     # DISCORD
     # =========================
 
     elif query.data == "discord":
 
-        await send_visit_notification(
+        await send_notification(
             context,
-            user,
-            "Discord",
-            DISCORD_ID
+            "🎮 Discord button pressed",
+            user
         )
 
         keyboard = InlineKeyboardMarkup([
@@ -296,26 +317,19 @@ async def button_handler(
             reply_markup=keyboard,
         )
 
-    # =========================
-    # CONTACT OWNER
-    # =========================
-
-    elif query.data == "contact":
-
-        context.user_data["contact_mode"] = True
-
-        await query.edit_message_text(
-            "💬 <b>Message Owner</b>\n\n"
-            "Write your message and I will send it to the owner.\n\n"
-            "To cancel, type /cancel",
-            parse_mode="HTML",
-        )
 
     # =========================
     # ABOUT
     # =========================
 
     elif query.data == "about":
+
+        # إرسال إشعار لصاحب البوت
+        await send_notification(
+            context,
+            "⚠️ About button pressed",
+            user
+        )
 
         about_text = (
             "⚠️ <b>WARNING — READ CAREFULLY</b>\n\n"
@@ -348,49 +362,56 @@ async def button_handler(
         )
 
 
+    # =========================
+    # MESSAGE OWNER
+    # =========================
+
+    elif query.data == "contact":
+
+        # إشعار عند مجرد فتح خيار المراسلة
+        await send_notification(
+            context,
+            "💬 Message Owner button pressed",
+            user
+        )
+
+        context.user_data["contact_mode"] = True
+
+        await query.edit_message_text(
+            "💬 <b>Message Owner</b>\n\n"
+            "Write your message and I will send it to the owner.\n\n"
+            "To cancel, type /cancel",
+            parse_mode="HTML",
+        )
+
+
 # =========================
-# VISIT NOTIFICATION
+# NOTIFICATION
 # =========================
 
-async def send_visit_notification(
+async def send_notification(
     context: ContextTypes.DEFAULT_TYPE,
-    user,
-    platform,
-    account
+    action,
+    user
 ):
-
-    username = (
-        f"@{user.username}"
-        if user.username
-        else "No Username"
-    )
-
-    time_now = datetime.now().strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
-
-    notification = (
-        "🔔 <b>Someone opened an account button</b>\n\n"
-        f"Platform: <b>{platform}</b>\n"
-        f"Account: {account}\n\n"
-        f"Name: {user.full_name}\n"
-        f"Username: {username}\n"
-        f"ID: <code>{user.id}</code>\n"
-        f"Time: {time_now}"
-    )
 
     try:
 
+        text = (
+            f"{action}\n\n"
+            f"{user_info(user)}"
+        )
+
         await context.bot.send_message(
             chat_id=OWNER_ID,
-            text=notification,
+            text=text,
             parse_mode="HTML",
         )
 
     except Exception as error:
 
         logger.error(
-            "Could not send notification: %s",
+            "Notification error: %s",
             error
         )
 
@@ -410,6 +431,10 @@ async def message_handler(
     user = update.effective_user
     message = update.message
 
+    # -------------------------
+    # CANCEL
+    # -------------------------
+
     if message.text == "/cancel":
 
         context.user_data["contact_mode"] = False
@@ -421,6 +446,11 @@ async def message_handler(
 
         return
 
+
+    # -------------------------
+    # NORMAL MESSAGE
+    # -------------------------
+
     if not context.user_data.get("contact_mode"):
 
         await message.reply_text(
@@ -429,6 +459,11 @@ async def message_handler(
 
         return
 
+
+    # -------------------------
+    # SEND MESSAGE TO OWNER
+    # -------------------------
+
     username = (
         f"@{user.username}"
         if user.username
@@ -436,7 +471,7 @@ async def message_handler(
     )
 
     owner_message = (
-        "📩 <b>New Message</b>\n\n"
+        "📩 <b>New Message From Social Hub</b>\n\n"
         f"Name: {user.full_name}\n"
         f"Username: {username}\n"
         f"ID: <code>{user.id}</code>\n\n"
@@ -459,7 +494,7 @@ async def message_handler(
     except Exception as error:
 
         logger.error(
-            "Could not send owner message: %s",
+            "Message sending error: %s",
             error
         )
 
@@ -475,6 +510,11 @@ async def message_handler(
 # =========================
 
 def main():
+
+    if not BOT_TOKEN:
+        raise RuntimeError(
+            "BOT_TOKEN is missing from GitHub Secrets"
+        )
 
     app = (
         Application.builder()
