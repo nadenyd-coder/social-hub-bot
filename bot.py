@@ -1,4 +1,3 @@
-Social Hub Bot — bot.py
 
 import os
 import logging
