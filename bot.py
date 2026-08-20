@@ -1,3 +1,5 @@
+Social Hub Bot — bot.py
+
 import os
 import logging
 from datetime import datetime
@@ -35,11 +37,13 @@ logger = logging.getLogger(__name__)
 # LANGUAGE SYSTEM
 # =========================================================
 
+# لا نخزن اللغة بشكل دائم.
+# تبقى فقط أثناء تشغيل البوت.
 user_languages = {}
 
 
 def get_language(user_id):
-    return user_languages.get(user_id, "en")
+    return user_languages.get(user_id)
 
 
 # =========================================================
@@ -67,6 +71,7 @@ TEXTS = {
         "sent": "Your message has been sent.",
         "cancelled": "Message cancelled.",
         "error": "An error occurred while sending the message.",
+        "language_title": "Language",
         "welcome": (
             "Welcome.\n\n"
             "A simple place to find all my social accounts "
@@ -113,6 +118,7 @@ TEXTS = {
         "sent": "تم إرسال رسالتك.",
         "cancelled": "تم إلغاء الرسالة.",
         "error": "حدث خطأ أثناء إرسال الرسالة.",
+        "language_title": "اللغة",
         "welcome": (
             "أهلًا بك.\n\n"
             "مكان بسيط للوصول إلى جميع حساباتي "
@@ -159,6 +165,7 @@ TEXTS = {
         "sent": "Tu mensaje ha sido enviado.",
         "cancelled": "Mensaje cancelado.",
         "error": "Ocurrió un error al enviar el mensaje.",
+        "language_title": "Idioma",
         "welcome": (
             "Bienvenido.\n\n"
             "Un lugar sencillo para encontrar todas mis "
@@ -185,6 +192,53 @@ TEXTS = {
             "© 𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃"
         ),
     },
+
+    "tr": {
+        "accounts": "Hesaplarım",
+        "contact": "Benimle İletişime Geç",
+        "about": "Hakkımda",
+        "language": "Dil",
+        "choose": "Bir seçenek seçin:",
+        "choose_account": "Bir hesap seçin:",
+        "instagram": "Instagram'ı Aç",
+        "tiktok": "TikTok'u Aç",
+        "telegram": "Telegram'ı Aç",
+        "discord": "Discord'u Aç",
+        "copy": "Kullanıcı Adını Kopyala",
+        "back": "Geri",
+        "home": "Ana Sayfa",
+        "write_message": "Mesajınızı aşağıya yazın.",
+        "cancel_text": "İptal etmek için /cancel yazın.",
+        "sent": "Mesajınız gönderildi.",
+        "cancelled": "Mesaj iptal edildi.",
+        "error": "Mesaj gönderilirken bir hata oluştu.",
+        "language_title": "Dil",
+        "welcome": (
+            "Hoş geldiniz.\n\n"
+            "Tüm sosyal hesaplarımı bulabileceğiniz "
+            "ve benimle iletişime geçebileceğiniz basit bir alan."
+        ),
+        "about_text": (
+            "⚠️ UYARI — DİKKATLİ OKUYUN\n\n"
+            "Bu Social Hub'ın sahibini keşfetmek üzeresiniz.\n\n"
+            "• Dahi\n"
+            "• Geliştirici\n"
+            "• Yakışıklı\n"
+            "• Oyuncu\n"
+            "• Siber Güvenlik Meraklısı\n"
+            "• Vizyoner\n"
+            "• Stratejist\n"
+            "• Dijital İçerik Üreticisi\n"
+            "• Bilgisayar Meraklısı\n"
+            "• Yaratıcı Zihin\n\n"
+            "Yan etkiler şunları içerebilir:\n"
+            "• Etkilenmek\n"
+            "• Kıskanmak\n"
+            "• Kendi yeteneklerinizi sorgulamak\n\n"
+            "Uyarıldınız.\n\n"
+            "© 𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃"
+        ),
+    },
 }
 
 
@@ -194,8 +248,8 @@ TEXTS = {
 
 def main_menu(language=None):
 
-    # أول دخول: English + عربي
-    if language is None:
+    # الوضع الافتراضي دائماً English + عربي
+    if language is None or language in ("en", "ar"):
         return InlineKeyboardMarkup([
             [
                 InlineKeyboardButton(
@@ -328,6 +382,12 @@ def language_menu():
         ],
         [
             InlineKeyboardButton(
+                "Türkçe",
+                callback_data="set_tr"
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 "Back",
                 callback_data="home"
             )
@@ -402,6 +462,8 @@ async def start(
 
     user = update.effective_user
 
+    # اللغة لا تُحفظ بعد إعادة تشغيل البوت.
+    # وإذا لم يختار المستخدم لغة بعد، تكون الرئيسية English + عربي.
     language = user_languages.get(user.id)
 
     if language is None:
@@ -440,7 +502,11 @@ async def button_handler(
 
     user = query.from_user
     language = get_language(user.id)
-    t = TEXTS[language]
+
+    # إذا لم يحدد لغة، نستخدم الإنجليزية للنصوص الداخلية.
+    current_language = language if language else "en"
+    t = TEXTS[current_language]
+
 
     # =====================================================
     # HOME
@@ -448,22 +514,24 @@ async def button_handler(
 
     if query.data == "home":
 
-        if user.id in user_languages:
+        # English والعربية = الرئيسية دائماً English + عربي
+        if current_language in ("en", "ar"):
 
             await query.edit_message_text(
                 "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
-                + t["choose"],
-                reply_markup=main_menu(language),
+                "Welcome — أهلًا بك\n\n"
+                "Choose an option — اختر من القائمة:",
+                reply_markup=main_menu(current_language),
             )
 
         else:
 
             await query.edit_message_text(
                 "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
-                "Welcome — أهلًا بك\n\n"
-                "Choose an option — اختر من القائمة:",
-                reply_markup=main_menu(),
+                f"{t['choose']}",
+                reply_markup=main_menu(current_language),
             )
+
 
     # =====================================================
     # MY ACCOUNTS
@@ -479,8 +547,9 @@ async def button_handler(
 
         await query.edit_message_text(
             t["choose_account"],
-            reply_markup=accounts_menu(language),
+            reply_markup=accounts_menu(current_language),
         )
+
 
     # =====================================================
     # INSTAGRAM
@@ -520,6 +589,7 @@ async def button_handler(
             reply_markup=keyboard,
         )
 
+
     # =====================================================
     # TIKTOK
     # =====================================================
@@ -557,6 +627,7 @@ async def button_handler(
             f"TikTok\n\n@{TIKTOK}",
             reply_markup=keyboard,
         )
+
 
     # =====================================================
     # TELEGRAM
@@ -596,6 +667,7 @@ async def button_handler(
             reply_markup=keyboard,
         )
 
+
     # =====================================================
     # DISCORD
     # =====================================================
@@ -634,6 +706,7 @@ async def button_handler(
             reply_markup=keyboard,
         )
 
+
     # =====================================================
     # COPY USERNAMES
     # =====================================================
@@ -661,6 +734,7 @@ async def button_handler(
             ]),
         )
 
+
     # =====================================================
     # ABOUT
     # =====================================================
@@ -684,6 +758,7 @@ async def button_handler(
                 ]
             ]),
         )
+
 
     # =====================================================
     # CONTACT ME
@@ -712,6 +787,7 @@ async def button_handler(
             ]),
         )
 
+
     # =====================================================
     # LANGUAGE
     # =====================================================
@@ -723,6 +799,7 @@ async def button_handler(
             reply_markup=language_menu(),
         )
 
+
     # =====================================================
     # ENGLISH
     # =====================================================
@@ -733,9 +810,11 @@ async def button_handler(
 
         await query.edit_message_text(
             "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
-            "Choose an option:",
+            "Welcome — أهلًا بك\n\n"
+            "Choose an option — اختر من القائمة:",
             reply_markup=main_menu("en"),
         )
+
 
     # =====================================================
     # ARABIC
@@ -747,9 +826,11 @@ async def button_handler(
 
         await query.edit_message_text(
             "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
-            "اختر من القائمة:",
+            "Welcome — أهلًا بك\n\n"
+            "Choose an option — اختر من القائمة:",
             reply_markup=main_menu("ar"),
         )
+
 
     # =====================================================
     # SPANISH
@@ -763,6 +844,21 @@ async def button_handler(
             "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
             "Elige una opción:",
             reply_markup=main_menu("es"),
+        )
+
+
+    # =====================================================
+    # TURKISH
+    # =====================================================
+
+    elif query.data == "set_tr":
+
+        user_languages[user.id] = "tr"
+
+        await query.edit_message_text(
+            "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
+            "Bir seçenek seçin:",
+            reply_markup=main_menu("tr"),
         )
 
 
@@ -782,7 +878,12 @@ async def message_handler(
     message = update.message
 
     language = get_language(user.id)
+
+    if language is None:
+        language = "en"
+
     t = TEXTS[language]
+
 
     # =====================================================
     # CANCEL
@@ -799,6 +900,7 @@ async def message_handler(
 
         return
 
+
     # =====================================================
     # NOT IN CONTACT MODE
     # =====================================================
@@ -811,6 +913,7 @@ async def message_handler(
         )
 
         return
+
 
     # =====================================================
     # MESSAGE OWNER
