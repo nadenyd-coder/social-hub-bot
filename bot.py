@@ -35,7 +35,6 @@ logger = logging.getLogger(__name__)
 # LANGUAGE SYSTEM
 # =========================================================
 
-# اللغة الافتراضية English
 user_languages = {}
 
 
@@ -52,10 +51,8 @@ TEXTS = {
     "en": {
         "accounts": "My Accounts",
         "contact": "Contact Me",
-        "share": "Share Social Hub",
         "about": "About",
         "language": "Language",
-        "status": "Status: Online",
         "choose": "Choose an option:",
         "choose_account": "Choose an account:",
         "instagram": "Open Instagram",
@@ -70,15 +67,12 @@ TEXTS = {
         "sent": "Your message has been sent.",
         "cancelled": "Message cancelled.",
         "error": "An error occurred while sending the message.",
-        "status_title": "Status",
-        "status_text": "Social Hub is currently online.",
-        "language_title": "Language",
         "welcome": (
             "Welcome.\n\n"
             "A simple place to find all my social accounts "
             "and contact me."
         ),
-        "about": (
+        "about_text": (
             "⚠️ WARNING — READ CAREFULLY\n\n"
             "You are about to discover the owner of this Social Hub.\n\n"
             "• Genius\n"
@@ -103,10 +97,8 @@ TEXTS = {
     "ar": {
         "accounts": "حساباتي",
         "contact": "مراسلتي",
-        "share": "مشاركة Social Hub",
         "about": "حول",
         "language": "اللغة",
-        "status": "الحالة: متصل",
         "choose": "اختر خياراً:",
         "choose_account": "اختر حساباً:",
         "instagram": "فتح إنستغرام",
@@ -121,15 +113,12 @@ TEXTS = {
         "sent": "تم إرسال رسالتك.",
         "cancelled": "تم إلغاء الرسالة.",
         "error": "حدث خطأ أثناء إرسال الرسالة.",
-        "status_title": "الحالة",
-        "status_text": "Social Hub متصل حالياً.",
-        "language_title": "اللغة",
         "welcome": (
             "أهلاً بك.\n\n"
             "مكان بسيط للوصول إلى جميع حساباتي "
             "والتواصل معي."
         ),
-        "about": (
+        "about_text": (
             "⚠️ تحذير — اقرأ بعناية\n\n"
             "أنت على وشك اكتشاف صاحب هذا الـ Social Hub.\n\n"
             "• عبقري\n"
@@ -154,10 +143,8 @@ TEXTS = {
     "es": {
         "accounts": "Mis cuentas",
         "contact": "Contáctame",
-        "share": "Compartir Social Hub",
         "about": "Acerca de",
         "language": "Idioma",
-        "status": "Estado: En línea",
         "choose": "Elige una opción:",
         "choose_account": "Elige una cuenta:",
         "instagram": "Abrir Instagram",
@@ -172,15 +159,12 @@ TEXTS = {
         "sent": "Tu mensaje ha sido enviado.",
         "cancelled": "Mensaje cancelado.",
         "error": "Ocurrió un error al enviar el mensaje.",
-        "status_title": "Estado",
-        "status_text": "Social Hub está actualmente en línea.",
-        "language_title": "Idioma",
         "welcome": (
             "Bienvenido.\n\n"
             "Un lugar sencillo para encontrar todas mis "
             "redes sociales y contactarme."
         ),
-        "about": (
+        "about_text": (
             "⚠️ ADVERTENCIA — LEE CON ATENCIÓN\n\n"
             "Estás a punto de descubrir al dueño de este Social Hub.\n\n"
             "• Genio\n"
@@ -210,9 +194,8 @@ TEXTS = {
 
 def main_menu(language=None):
 
-    # القائمة الأولى الافتراضية English + عربي
+    # أول دخول: English + عربي
     if language is None:
-
         return InlineKeyboardMarkup([
             [
                 InlineKeyboardButton(
@@ -228,12 +211,6 @@ def main_menu(language=None):
             ],
             [
                 InlineKeyboardButton(
-                    "Share Social Hub — مشاركة البوت",
-                    callback_data="share"
-                )
-            ],
-            [
-                InlineKeyboardButton(
                     "About — حول",
                     callback_data="about"
                 )
@@ -242,12 +219,6 @@ def main_menu(language=None):
                 InlineKeyboardButton(
                     "Language — اللغة",
                     callback_data="language"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "Status: Online — الحالة: متصل",
-                    callback_data="status"
                 )
             ],
         ])
@@ -269,12 +240,6 @@ def main_menu(language=None):
         ],
         [
             InlineKeyboardButton(
-                t["share"],
-                callback_data="share"
-            )
-        ],
-        [
-            InlineKeyboardButton(
                 t["about"],
                 callback_data="about"
             )
@@ -283,12 +248,6 @@ def main_menu(language=None):
             InlineKeyboardButton(
                 t["language"],
                 callback_data="language"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                t["status"],
-                callback_data="status"
             )
         ],
     ])
@@ -377,7 +336,7 @@ def language_menu():
 
 
 # =========================================================
-# USER INFO
+# USER INFORMATION
 # =========================================================
 
 def get_user_info(user):
@@ -443,19 +402,27 @@ async def start(
 
     user = update.effective_user
 
-    # إذا ما اختار لغة، تظهر القائمة الرئيسية
-    # English + عربي
     language = user_languages.get(user.id)
 
-    t = TEXTS["en"]
+    if language is None:
 
-    await update.message.reply_text(
-        "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
-        f"{t['welcome']}\n\n"
-        "Choose an option — اختر خياراً:",
-        parse_mode="HTML",
-        reply_markup=main_menu(language),
-    )
+        await update.message.reply_text(
+            "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
+            "Welcome — أهلاً بك\n\n"
+            "Choose an option — اختر خياراً:",
+            reply_markup=main_menu(),
+        )
+
+    else:
+
+        t = TEXTS[language]
+
+        await update.message.reply_text(
+            "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
+            f"{t['welcome']}\n\n"
+            f"{t['choose']}",
+            reply_markup=main_menu(language),
+        )
 
 
 # =========================================================
@@ -494,16 +461,23 @@ async def button_handler(
 
             await query.edit_message_text(
                 "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
+                "Welcome — أهلاً بك\n\n"
                 "Choose an option — اختر خياراً:",
                 reply_markup=main_menu(),
             )
 
 
     # =====================================================
-    # ACCOUNTS
+    # MY ACCOUNTS
     # =====================================================
 
     elif query.data == "accounts":
+
+        await send_notification(
+            context,
+            "My Accounts opened",
+            user
+        )
 
         await query.edit_message_text(
             t["choose_account"],
@@ -519,7 +493,7 @@ async def button_handler(
 
         await send_notification(
             context,
-            "Instagram account button pressed",
+            "Instagram account opened",
             user
         )
 
@@ -558,7 +532,7 @@ async def button_handler(
 
         await send_notification(
             context,
-            "TikTok account button pressed",
+            "TikTok account opened",
             user
         )
 
@@ -597,7 +571,7 @@ async def button_handler(
 
         await send_notification(
             context,
-            "Telegram account button pressed",
+            "Telegram account opened",
             user
         )
 
@@ -636,7 +610,7 @@ async def button_handler(
 
         await send_notification(
             context,
-            "Discord account button pressed",
+            "Discord account opened",
             user
         )
 
@@ -673,12 +647,6 @@ async def button_handler(
 
     elif query.data == "copy_usernames":
 
-        await send_notification(
-            context,
-            "Copy Username button pressed",
-            user
-        )
-
         await query.edit_message_text(
             "Instagram: @" + INSTAGRAM + "\n"
             "TikTok: @" + TIKTOK + "\n"
@@ -709,12 +677,12 @@ async def button_handler(
 
         await send_notification(
             context,
-            "About button pressed",
+            "About opened",
             user
         )
 
         await query.edit_message_text(
-            t["about"],
+            t["about_text"],
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton(
@@ -727,14 +695,14 @@ async def button_handler(
 
 
     # =====================================================
-    # CONTACT
+    # CONTACT ME
     # =====================================================
 
     elif query.data == "contact":
 
         await send_notification(
             context,
-            "Contact Me button pressed",
+            "Contact Me opened",
             user
         )
 
@@ -743,67 +711,6 @@ async def button_handler(
         await query.edit_message_text(
             f"{t['write_message']}\n\n"
             f"{t['cancel_text']}",
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        t["home"],
-                        callback_data="home"
-                    )
-                ]
-            ]),
-        )
-
-
-    # =====================================================
-    # SHARE
-    # =====================================================
-
-    elif query.data == "share":
-
-        bot_username = context.bot.username
-
-        share_url = (
-            f"https://t.me/{bot_username}"
-            if bot_username
-            else "https://t.me/"
-        )
-
-        share_text = (
-            "Check out Social Hub\n"
-            "https://t.me/"
-            + (bot_username or "")
-        )
-
-        keyboard = InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton(
-                    "Share",
-                    switch_inline_query=share_text
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    t["home"],
-                    callback_data="home"
-                )
-            ],
-        ])
-
-        await query.edit_message_text(
-            t["share"] + "\n\n" + share_url,
-            reply_markup=keyboard,
-        )
-
-
-    # =====================================================
-    # STATUS
-    # =====================================================
-
-    elif query.data == "status":
-
-        await query.edit_message_text(
-            f"{t['status_title']}\n\n"
-            f"{t['status_text']}",
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton(
@@ -828,7 +735,7 @@ async def button_handler(
 
 
     # =====================================================
-    # SET ENGLISH
+    # ENGLISH
     # =====================================================
 
     elif query.data == "set_en":
@@ -837,13 +744,13 @@ async def button_handler(
 
         await query.edit_message_text(
             "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
-            + TEXTS["en"]["choose"],
+            "Choose an option:",
             reply_markup=main_menu("en"),
         )
 
 
     # =====================================================
-    # SET ARABIC
+    # ARABIC
     # =====================================================
 
     elif query.data == "set_ar":
@@ -852,13 +759,13 @@ async def button_handler(
 
         await query.edit_message_text(
             "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
-            + TEXTS["ar"]["choose"],
+            "اختر خياراً:",
             reply_markup=main_menu("ar"),
         )
 
 
     # =====================================================
-    # SET SPANISH
+    # SPANISH
     # =====================================================
 
     elif query.data == "set_es":
@@ -867,7 +774,7 @@ async def button_handler(
 
         await query.edit_message_text(
             "𝑺𝒐𝒄𝒊𝒂𝒍 𝑯𝒖𝒃\n\n"
-            + TEXTS["es"]["choose"],
+            "Elige una opción:",
             reply_markup=main_menu("es"),
         )
 
