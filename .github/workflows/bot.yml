@@ -1,15 +1,20 @@
+
 name: Social Hub Bot
 
 on:
   workflow_dispatch:
 
   schedule:
-    - cron: "30 */5 * * *"
+    - cron: "0 */6 * * *"
+
+concurrency:
+  group: social-hub-bot
+  cancel-in-progress: true
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 330
+    timeout-minutes: 350
 
     steps:
       - name: Download bot files
